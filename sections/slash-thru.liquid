@@ -1,0 +1,25 @@
+<script src="{{ 'slash-thru.js' | asset_url }}" type="module" defer></script>
+
+{% if request.page_type == 'product' %}
+  <script>
+    window.slash = window.slash || {}
+    window.slash.product = window.slash.product || {}
+    window.slash.discount = window.slash.discount || {}
+    window.slash.product = {
+      itle: {{ product.title | json }},
+      id: {{ product.id | json }},
+      price: {{ product.price | json }},
+      collections: [{%- for collection in product.collections -%}
+        '{{ collection.id }}'{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}],
+      collection_titles: [{%- for collection in product.collections -%}
+        '{{ collection.title }}'{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}],
+      variants: [{%- for variant in product.variants -%}
+        {'{{ variant.id | json }}': '{{ variant.price }}' }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}]
+    }
+
+    window.slash.discount = {}
+  </script>
+{% endif %}
