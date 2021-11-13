@@ -1,25 +1,96 @@
 <script src="{{ 'slash-thru.js' | asset_url }}" type="module" defer></script>
 
-{% if request.page_type == 'product' %}
-  <script>
-    window.slash = window.slash || {}
+<script>
+  window.slash = window.slash || {}
+  window.slash.page = {{ request.page_type | json }}
+
+  window.slash.discount = window.slash.discount || {}
+  window.slash.settings = window.slash.settings || {}
+
+  {% if request.page_type == 'product' %}
     window.slash.product = window.slash.product || {}
-    window.slash.discount = window.slash.discount || {}
     window.slash.product = {
-      itle: {{ product.title | json }},
+      title: {{ product.title | json }},
       id: {{ product.id | json }},
       price: {{ product.price | json }},
       collections: [{%- for collection in product.collections -%}
-        '{{ collection.id }}'{%- unless forloop.last -%},{%- endunless -%}
+        {{ collection.id | json }}{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}],
       collection_titles: [{%- for collection in product.collections -%}
-        '{{ collection.title }}'{%- unless forloop.last -%},{%- endunless -%}
+        {{ collection.title | json }}{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}],
       variants: [{%- for variant in product.variants -%}
         {'{{ variant.id | json }}': '{{ variant.price }}' }{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}]
     }
+  {% endif %}
 
-    window.slash.discount = {}
-  </script>
-{% endif %}
+  window.slash.cart = window.slash.cart || {}
+  window.slash.cart = {
+    items: [{% for item in cart.items %}
+      {{ item | json }}{%- unless forloop.last -%},{%- endunless -%}
+    {% endfor %}]
+  }
+
+  window.slash.money = window.slash.money || {}
+  window.slash.money.format = window.slash.moneyFormat || {}
+  window.slash.money.shopFormat = '{{ shop.money_format }}'
+
+  window.slash.money.format = function (cents, format = window.slash.money.shopFormat) {
+    if (typeof cents === 'string') {
+      cents = cents.replace('.', '');
+    }
+    let value = '';
+    const placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+    const formatString = format;
+
+    function formatWithDelimiters(
+      number,
+      precision = 2,
+      thousands = ',',
+      decimal = '.'
+    ) {
+      if (isNaN(number) || number == null) {
+        return 0;
+      }
+
+      number = (number / 100.0).toFixed(precision);
+
+      const parts = number.split('.');
+      const dollarsAmount = parts[0].replace(
+        /(\d)(?=(\d\d\d)+(?!\d))/g,
+        `$1${thousands}`
+      );
+      const centsAmount = parts[1] ? decimal + parts[1] : '';
+
+      return dollarsAmount + centsAmount;
+    }
+
+    switch (formatString.match(placeholderRegex)[1]) {
+      case 'amount':
+        value = formatWithDelimiters(cents, 2);
+        break;
+      case 'amount_no_decimals':
+        value = formatWithDelimiters(cents, 0);
+        break;
+      case 'amount_with_comma_separator':
+        value = formatWithDelimiters(cents, 2, '.', ',');
+        break;
+      case 'amount_no_decimals_with_comma_separator':
+        value = formatWithDelimiters(cents, 0, '.', ',');
+        break;
+    }
+
+    return formatString.replace(placeholderRegex, value);
+  }
+
+</script>
+
+<style>
+  .slash-price-styles {
+    color: red !important;
+    margin-right: 8px !important;
+    text-decoration: none !important;
+    width: auto !important;
+  }
+</style>

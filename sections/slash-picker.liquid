@@ -1,0 +1,77 @@
+<slash-picker>
+  <h2 class="heading">Slash Picker</h2>
+
+  <p class="direction">Will place discount price next to this selector:</p>
+  <code class="selector" data-slash-selector>Selector Here</code>
+
+  <button class="save" data-slash-save>Save</button>
+
+  <p class="sucess-message" data-slash-success>Your price discount selector was updated and saved. You may close this window now and return to the app.</p>
+</slash-picker>
+
+
+<style>
+  slash-picker {
+    position:fixed;
+    bottom:50px;
+    left: 0;
+    //min-height: 250px;
+    width: 450px;
+    border: 1px solid black;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: white;
+    box-shadow: 2px -2px 3px 0 rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    display: none;
+  }
+
+  slash-picker .heading {
+    text-align: center;
+    font-weight: 600;
+    margin: 1rem 0;
+  }
+
+  slash-picker .direction {
+    text-align: center;
+  }
+
+  slash-picker .selector {
+    display: block;
+    text-align: center;
+    margin: 1.5rem 0.5rem;
+    padding: 0.75rem;
+    background: #1b1b1b;
+    color: #fff;
+    border-radius: 8px;
+  }
+
+  slash-picker .save {
+    display: block;
+    margin: 0 auto 1rem;
+    // padding: 1rem 2rem;
+    border: 0;
+    border-radius: 5px;
+    background-color: blue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  slash-picker .save:hover {
+    opacity: 0.7;
+  }
+
+  slash-picker .save:disabled {
+    cursor: wait;
+  }
+
+  slash-picker .sucess-message {
+    display: none;
+    text-align:center;
+    line-height: 1.2;
+    font-size: 12px;
+    color: black;
+    margin: 1rem
+  }
+</style>
